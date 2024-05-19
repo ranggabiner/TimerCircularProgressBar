@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  TimerCircularProgressBar
-//
-//  Created by Rangga Biner on 19/05/24.
-//
-
 import SwiftUI
 
 let timer = Timer
@@ -14,7 +7,7 @@ let timer = Timer
 struct ContentView: View {
     
     @State var counter: Int = 0
-    var countTo: Int = 120 // 4 minutes 120 - 2 minutes
+    var countTo: Int = 120 // 2 minutes
     
     var body: some View {
         VStack {
@@ -23,8 +16,8 @@ struct ContentView: View {
                     .fill(Color(.clear))
                     .frame(width: 250, height: 250)
                     .overlay(
-                        Circle().stroke(Color.green, lineWidth: 25)
-                )
+                        Circle().stroke(Color.gray, lineWidth: 25)
+                    )
                 
                 Circle()
                     .fill(Color(.clear))
@@ -33,30 +26,26 @@ struct ContentView: View {
                         Circle().trim(from: 0, to: progress())
                             .stroke(style: StrokeStyle(
                             lineWidth: 25,
-                            lineCap: .square,
+                            lineCap: .round,
                             lineJoin: .round
                             )
                         )
-                            .foregroundStyle(Color(completed() ? Color.orange : Color.gray))
-                    ).animation(
-                        .easeInOut(duration: 0.2)
+                            .foregroundStyle(Color.green)
                     )
+                    .rotationEffect(.degrees(-90))
+                    .animation(.easeInOut(duration: 0.2), value: counter)
                 Clock(counter: counter, countTo: countTo)
             }
         } // end vstack
         .onReceive(timer) { time in
-            if (self.counter < self.countTo) {
+            if self.counter < self.countTo {
                 self.counter += 1
             }
         }
     }
     
-    func completed() -> Bool {
-        return progress() == 1
-    }
-    
     func progress() -> CGFloat {
-        return(CGFloat(counter) / CGFloat(countTo))
+        return 1 - (CGFloat(counter) / CGFloat(countTo))
     }
 }
 
@@ -75,13 +64,12 @@ struct Clock: View {
     
     func counterToMinutes() -> String {
         let currentTime = countTo - counter
-        let seconds  = currentTime % 60
-        let minute = Int(currentTime / 60)
+        let seconds = currentTime % 60
+        let minutes = Int(currentTime / 60)
         
-        return "\(minute):\(seconds < 10 ? "0" : "")\(seconds)"
+        return "\(minutes):\(seconds < 10 ? "0" : "")\(seconds)"
     }
 }
-
 
 #Preview {
     ContentView()
